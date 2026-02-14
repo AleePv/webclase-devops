@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Películas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: url('/static/images/backgroundsesion.jpg') center center / cover no-repeat fixed;
+            min-height: 100vh;
+            padding: 40px 20px;
+            position: relative;
+        }
+        
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: rgba(30, 41, 59, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 20px;
+            box-shadow: 0 30px 90px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2));
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.5);
+        }
+        
+        .header p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.1em;
+        }
+        
+        .movies-list {
+            padding: 40px;
+        }
+        
+        .movie-item {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 25px;
+            margin-bottom: 20px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+        }
+        
+        .movie-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            border-color: rgba(102, 126, 234, 0.3);
+        }
+        
+        .movie-info {
+            flex: 1;
+        }
+        
+        .movie-title {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 8px;
+        }
+        
+        .movie-details {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.95em;
+        }
+        
+        .edit-button {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(6, 182, 212, 0.3);
+        }
+        
+        .edit-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(6, 182, 212, 0.5);
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin: 0 40px 40px 40px;
+            color: #06b6d4;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.05em;
+            transition: all 0.3s;
+        }
+        
+        .back-link:hover {
+            color: #0891b2;
+            transform: translateX(-5px);
+        }
+        
+        .empty-message {
+            text-align: center;
+            padding: 80px 40px;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 1.3em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>✏️ Editar Películas</h1>
+            <p>Administrador: {{ usuario.username }}</p>
+        </div>
+        
+        <div class="movies-list">
+            {% if peliculas %}
+                {% for pelicula in peliculas %}
+                <div class="movie-item">
+                    <div class="movie-info">
+                        <div class="movie-title">{{ pelicula.titulo }}</div>
+                        <div class="movie-details">
+                            {{ pelicula.genero }} | {{ pelicula.año }} | {{ pelicula.director }}
+                        </div>
+                    </div>
+                    <a href="/actualizar/{{ pelicula.id }}" class="edit-button">Editar</a>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-message">No hay películas para editar</div>
+            {% endif %}
+        </div>
+        
+        <a href="/peliculas" class="back-link">← Volver a películas</a>
+    </div>
+</body>
+</html>

@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="/static/images/iconn.png">
+    <title>🎬 Sistema de Cartelera</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: url('/static/images/background.jpg?v=1') center center / cover no-repeat fixed;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(3px);
+            -webkit-backdrop-filter: blur(3px);
+            pointer-events: none;
+        }
+        
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 25px;
+            box-shadow: 0 30px 90px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            animation: fadeInUp 0.6s ease-out;
+            position: relative;
+            z-index: 1;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .header {
+            background: url('/static/images/bannerA.jpg?v=1') center center / cover no-repeat;
+            background-size: cover;
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
+            color: white;
+            padding: 50px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(30, 20, 50, 0.6));
+            z-index: 0;
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .header-content {
+            position: relative;
+            z-index: 1;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px 40px;
+            border-radius: 15px;
+            backdrop-filter: blur(5px);
+            display: inline-block;
+            margin: 0 auto;
+        }
+        
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 4px 4px 20px rgba(0,0,0,1), 0 0 40px rgba(0,0,0,0.8);
+            letter-spacing: 2px;
+            font-weight: bold;
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 1;
+            text-shadow: 3px 3px 10px rgba(0,0,0,1);
+        }
+        
+        .content {
+            padding: 50px 40px;
+        }
+        
+        .welcome-section {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .welcome-title {
+            font-size: 2.5em;
+            color: transparent;
+            -webkit-text-stroke: 2px #a855f7;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-shadow: 
+                0 0 6px rgba(228, 199, 255, 0.8),
+                0 0 10px rgba(168, 85, 247, 0.6),
+                0 0 14px #d9adff66,
+                2px 2px 4px rgba(0,0,0,0.8);
+            animation: purpleGlow 2.5s ease-in-out infinite;
+        }
+        
+        @keyframes purpleGlow {
+            0%, 100% {
+                text-shadow: 
+                    0 0 6px rgba(215, 173, 255, 0.9),
+                    0 0 10px rgba(209, 160, 255, 0.7),
+                    0 0 14px rgba(168, 85, 247, 0.5),
+                    2px 2px 4px rgba(0,0,0,0.8);
+            }
+            50% {
+                text-shadow: 
+                    0 0 10px rgba(223, 188, 255, 0.7),
+                    0 0 16px rgba(208, 158, 255, 0.5),
+                    0 0 22px rgba(255, 222, 139, 0.5),
+                    2px 2px 4px rgba(0,0,0,0.8);
+            }
+        }
+        
+        .user-info {
+            padding: 0;
+            margin-bottom: 40px;
+        }
+        
+        .user-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 25px;
+        }
+        
+        .info-item {
+            background: linear-gradient(145deg, #ffffff 0%, #f8f9ff 100%);
+            padding: 30px;
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            box-shadow: 
+                0 8px 32px rgba(102, 126, 234, 0.12),
+                0 2px 8px rgba(118, 75, 162, 0.08);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid rgba(102, 126, 234, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .info-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(102, 126, 234, 0.05), 
+                transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .info-item::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, 
+                #667eea 0%, 
+                #764ba2 50%, 
+                #667eea 100%);
+            background-size: 200% 100%;
+            animation: gradientMove 3s ease infinite;
+        }
+        
+
+        
+        .info-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 
+                0 15px 45px rgba(102, 126, 234, 0.25),
+                0 5px 15px rgba(118, 75, 162, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.5);
+            border-color: rgba(102, 126, 234, 0.3);
+        }
+        
+        .info-item:hover::before {
+            left: 100%;
+        }
+        
+        .info-icon {
+            width: 90px;
+            height: 90px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2em;
+            margin-bottom: 18px;
+            box-shadow: 
+                0 10px 25px rgba(102, 126, 234, 0.3),
+                0 4px 10px rgba(118, 75, 162, 0.2),
+                inset 0 2px 5px rgba(255, 255, 255, 0.2);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 4px solid white;
+            position: relative;
+        }
+        
+        .info-icon::before {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: -4px;
+            right: -4px;
+            bottom: -4px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            opacity: 0;
+            filter: blur(12px);
+            transition: opacity 0.4s ease;
+            z-index: -1;
+        }
+        
+        .info-item:hover .info-icon {
+            transform: scale(1.08);
+            box-shadow: 
+                0 15px 35px rgba(102, 126, 234, 0.4),
+                0 6px 15px rgba(118, 75, 162, 0.3),
+                inset 0 2px 5px rgba(255, 255, 255, 0.3);
+        }
+        
+        .info-item:hover .info-icon::before {
+            opacity: 0.6;
+        }
+        
+        .info-text {
+            width: 100%;
+        }
+        
+        .info-label {
+            font-size: 0.75em;
+            color: #999;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 700;
+            opacity: 0.8;
+        }
+        
+        .info-value {
+            font-size: 1.4em;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            position: relative;
+            text-shadow: 0 0 1px rgba(102, 126, 234, 0.1);
+        }
+        
+        .menu-section h2 {
+            font-size: 2.2em;
+            color: transparent;
+            -webkit-text-stroke: 2px #06b6d4;
+            font-weight: bold;
+            margin-bottom: 25px;
+            padding-bottom: 10px;
+            border-bottom: none;
+            text-shadow: 
+                0 0 6px rgba(165, 243, 252, 0.9),
+                0 0 10px rgba(225, 251, 255, 0.7),
+                0 0 14px rgba(228, 251, 255, 0.5),
+                2px 2px 4px rgba(0,0,0,0.8);
+        }
+        
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .menu-card {
+            background: linear-gradient(145deg, #ffffff 0%, #f8f9ff 100%);
+            border-radius: 18px;
+            padding: 30px;
+            text-decoration: none;
+            color: inherit;
+            box-shadow: 
+                0 8px 32px rgba(102, 126, 234, 0.12),
+                0 2px 8px rgba(118, 75, 162, 0.08);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid rgba(102, 126, 234, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .menu-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(102, 126, 234, 0.05), 
+                transparent);
+            transition: left 0.5s ease;
+            z-index: 0;
+        }
+        
+        .menu-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, 
+                #667eea 0%, 
+                #764ba2 50%, 
+                #667eea 100%);
+        }
+        
+        .menu-card:hover::before {
+            left: 100%;
+        }
+        
+        .menu-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 
+                0 15px 45px rgba(102, 126, 234, 0.25),
+                0 5px 15px rgba(118, 75, 162, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.5),
+                0 0 30px rgba(168, 85, 247, 0.6);
+            border-color: rgba(168, 85, 247, 0.3);
+        }
+        
+        .card-content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        
+        .card-icon {
+              font-size: 3.2em;
+              margin-bottom: 18px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              filter: drop-shadow(0 0 10px rgba(168, 85, 247, 0.3));
+        }
+        
+        .menu-card:hover .card-icon {
+            filter: drop-shadow(0 0 20px rgba(168, 85, 247, 0.8));
+        }
+
+                .card-title {
+                      font-size: 1.35em;
+                      font-weight: 900;
+                      color: #333;
+                      margin-bottom: 6px;
+                      letter-spacing: 0.5px;
+                }
+        
+        @keyframes iconGlow {
+            0%, 100% {
+                filter: 
+                    drop-shadow(0 0 15px rgba(118, 75, 162, 0.6))
+                    drop-shadow(0 0 25px rgba(102, 126, 234, 0.4))
+                    drop-shadow(0 8px 16px rgba(102, 126, 234, 0.3));
+            }
+            50% {
+                filter: 
+                    drop-shadow(0 0 20px rgba(118, 75, 162, 0.8))
+                    drop-shadow(0 0 35px rgba(102, 126, 234, 0.6))
+                    drop-shadow(0 8px 16px rgba(102, 126, 234, 0.3));
+            }
+        }
+        
+        .card-title {
+            font-size: 1.3em;
+            font-weight: 800;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .card-description {
+            font-size: 0.9em;
+            color: #666;
+            line-height: 1.5;
+        }
+        
+        .admin-panel {
+            border-color: rgba(168, 85, 247, 0.3);
+            background: linear-gradient(145deg, #ffffff 0%, #faf5ff 100%);
+        }
+        
+        .admin-panel:hover {
+            box-shadow: 
+                0 15px 45px rgba(102, 126, 234, 0.25),
+                0 5px 15px rgba(118, 75, 162, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.5),
+                0 0 30px rgba(168, 85, 247, 0.6);
+            border-color: rgba(168, 85, 247, 0.5);
+        }
+        
+        .logout-section {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px solid #e9ecef;
+        }
+        
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            color: #dc2626;
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s;
+            box-shadow: 
+                0 5px 15px rgba(0,0,0,0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(220, 38, 38, 0.3);
+        }
+        
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            transform: translateY(-2px);
+            box-shadow: 
+                0 8px 20px rgba(0,0,0,0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            border-color: rgba(220, 38, 38, 0.5);
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .content {
+                padding: 30px 20px;
+            }
+            
+            .menu-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-content">
+                <h1>🎬 Sistema de Cartelera</h1>
+                <p>Gestión de Películas</p>
+            </div>
+        </div>
+        
+        <div class="content">
+            <div class="welcome-section">
+                <h2 class="welcome-title">Bienvenido, {{ usuario.username }}!</h2>
+            </div>
+            
+            <div class="user-info">
+                <div class="user-info-grid">
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <img src="/static/images/icon.jpg" alt="Usuario" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                        </div>
+                        <div class="info-text">
+                            <div class="info-label">Usuario</div>
+                            <div class="info-value">{{ usuario.username }}</div>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon">
+                            {% if usuario.get('is_admin') %}
+                            <img src="/static/images/roladmin.jpg" alt="Admin" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                            {% else %}
+                            <img src="/static/images/roluser.jpg" alt="Usuario" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                            {% endif %}
+                        </div>
+                        <div class="info-text">
+                            <div class="info-label">Rol</div>
+                            <div class="info-value">
+                                {% if usuario.get('is_admin') %}
+                                Administrador
+                                {% else %}
+                                Usuario
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="menu-section">
+                <h2>🎯 Acceso Rápido</h2>
+                <div class="menu-grid">
+                    <a href="/peliculas" class="menu-card">
+                        <div class="card-content">
+                            <span class="card-icon">🎬</span>
+                            <div class="card-title">Ver Cartelera</div>
+                            <div class="card-description">Explora todas las películas disponibles</div>
+                        </div>
+                    </a>
+                    
+                    <a href="/favoritos/mis-favoritos" class="menu-card">
+                        <div class="card-content">
+                            <span class="card-icon">❤️</span>
+                            <div class="card-title">Mis Favoritos</div>
+                            <div class="card-description">Gestiona tu lista personal</div>
+                        </div>
+                    </a>
+                    
+                    {% if usuario.get('is_admin') %}
+                    <a href="/insert_pelicula" class="menu-card">
+                        <div class="card-content">
+                            <span class="card-icon">➕</span>
+                            <div class="card-title">Agregar Película</div>
+                            <div class="card-description">Añade nuevas películas</div>
+                        </div>
+                    </a>
+                    
+                    <a href="/actualizar_peliculas" class="menu-card">
+                        <div class="card-content">
+                            <span class="card-icon">✏️</span>
+                            <div class="card-title">Editar Películas</div>
+                            <div class="card-description">Modifica información existente</div>
+                        </div>
+                    </a>
+                    
+                    <a href="/borrar" class="menu-card">
+                        <div class="card-content">
+                            <span class="card-icon">🗑️</span>
+                            <div class="card-title">Borrar Películas</div>
+                            <div class="card-description">Elimina películas del sistema</div>
+                        </div>
+                    </a>
+                    
+                    <a href="/favoritos/admin/todos-favoritos" class="menu-card admin-panel">
+                        <div class="card-content">
+                            <span class="card-icon">📊</span>
+                            <div class="card-title">Panel Admin</div>
+                            <div class="card-description">Ver estadísticas de favoritos</div>
+                        </div>
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="logout-section">
+                <a href="/auth/logout" class="logout-btn">
+                    <span>Cerrar Sesión</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+

@@ -1,0 +1,1349 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="/static/images/iconn.png">
+    <title>🎬 Cartelera de Películas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: url('/static/images/background.jpg?v=1') center 75% / cover no-repeat fixed;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(3px);
+            -webkit-backdrop-filter: blur(3px);
+            pointer-events: none;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            border-radius: 25px;
+            overflow: hidden;
+            animation: fadeInUp 0.6s ease-out;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .content-wrapper {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            box-shadow: 0 30px 90px rgba(0, 0, 0, 0.5);
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .banner-wrapper {
+              position: relative;
+              overflow: hidden;
+        }
+        
+        .banner-wrapper::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('/static/images/monki.png') center 40% / cover no-repeat;
+            filter: blur(4px) contrast(1.08) saturate(1.08) brightness(1.08);
+            opacity: 0.85;
+            z-index: 0;
+        }
+        
+        .banner-wrapper::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.28);
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .header {
+            color: white;
+            padding: 50px 40px;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .header-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 4px 4px 20px rgba(0,0,0,1), 0 0 40px rgba(0,0,0,0.8);
+            letter-spacing: 2px;
+            font-weight: bold;
+            text-align: center;
+        }
+        
+        .user-info {
+            margin-top: 10px;
+            font-size: 1.1em;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.8);
+            text-align: center;
+        }
+        
+        .admin-badge {
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #333;
+            padding: 8px 20px;
+            border-radius: 25px;
+            display: inline-block;
+            margin-top: 10px;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+        }
+        
+        .logout-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+        }
+        
+        .actions {
+            padding: 25px 40px;
+            background: rgba(0, 0, 0, 0.25);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .btn {
+            padding: 14px 28px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 700;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-add {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-add:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+        }
+        
+        .btn-admin-favs {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+        
+        .btn-admin-favs:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(240, 147, 251, 0.5);
+        }
+        
+        .btn-my-favs {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            color: white;
+        }
+        
+        .btn-my-favs:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(250, 112, 154, 0.5);
+        }
+        
+        .peliculas-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+            padding: 40px;
+        }
+        
+        .pelicula-card {
+            background: #fff;
+            border-radius: 8px;
+            overflow: visible;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            cursor: pointer;
+            z-index: 1;
+        }
+        
+        .pelicula-card:hover {
+            transform: scale(1.08);
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.6);
+            z-index: 20;
+        }
+        
+        .pelicula-card-inner {
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .pelicula-poster {
+            width: 100%;
+            height: 400px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .pelicula-poster img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+        
+        .pelicula-card:hover .pelicula-poster img {
+            transform: scale(1.08);
+        }
+        
+        .pelicula-poster::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 100px;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+        }
+        
+        .pelicula-content {
+            padding: 25px;
+        }
+        
+        .pelicula-titulo {
+            font-size: 1.5em;
+            font-weight: 800;
+            color: #1e293b;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+        
+        .pelicula-subtitle {
+            font-size: 0.9em;
+            color: #64748b;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+        
+        .pelicula-info {
+            color: #475569;
+            line-height: 1.8;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+        }
+        
+        .pelicula-info strong {
+            color: #1e293b;
+            font-weight: 600;
+        }
+        
+        .card-actions {
+            display: flex;
+            gap: 10px;
+            padding-top: 15px;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        .btn-favorito {
+              background: linear-gradient(135deg, #ff5f6d, #ffc371);
+              color: #fff;
+              border: none;
+              padding: 8px 16px;
+              border-radius: 12px;
+              cursor: pointer;
+              font-weight: 700;
+              font-size: 1em;
+              letter-spacing: 0.2px;
+              transition: all 0.22s cubic-bezier(.4,2,.6,1);
+              flex: 1 1 120px;
+              min-width: 120px;
+              max-width: 180px;
+              box-shadow: 0 3px 12px rgba(255, 95, 109, 0.13);
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              gap: 0.5em;
+              outline: none;
+        }
+        
+        .btn-favorito:hover {
+              background: linear-gradient(135deg, #ff9966, #ff5e62);
+              transform: translateY(-3px) scale(1.04);
+              box-shadow: 0 10px 32px rgba(255, 95, 109, 0.25);
+        }
+        
+        .btn-favorito-added {
+              background: linear-gradient(135deg, #43e97b, #38f9d7);
+              color: #fff;
+              box-shadow: 0 3px 12px rgba(67, 233, 123, 0.13);
+              cursor: pointer;
+        }
+        
+        .btn-favorito-added:hover {
+              background: linear-gradient(135deg, #11998e, #38ef7d);
+              box-shadow: 0 10px 32px rgba(67, 233, 123, 0.25);
+        }
+        
+        .btn-delete {
+              background: linear-gradient(135deg, #ff5858, #f857a6);
+              color: #fff;
+              border: none;
+              padding: 8px 16px;
+              border-radius: 12px;
+              cursor: pointer;
+              font-weight: 700;
+              font-size: 1em;
+              letter-spacing: 0.2px;
+              transition: all 0.22s cubic-bezier(.4,2,.6,1);
+              flex: 1 1 120px;
+              min-width: 120px;
+              max-width: 180px;
+              box-shadow: 0 3px 12px rgba(248, 87, 166, 0.13);
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              gap: 0.5em;
+              outline: none;
+        }
+        
+        .btn-delete:hover {
+              background: linear-gradient(135deg, #f857a6, #ff5858);
+              transform: translateY(-3px) scale(1.04);
+              box-shadow: 0 10px 32px rgba(248, 87, 166, 0.25);
+        }
+        
+        .no-data {
+            text-align: center;
+            color: #999;
+            font-size: 1.5em;
+            padding: 100px 40px;
+        }
+        
+        .footer {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 2px solid rgba(102, 126, 234, 0.3);
+            color: white;
+            text-align: center;
+            padding: 35px 40px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
+            pointer-events: none;
+        }
+        
+        .footer p {
+            margin: 10px 0;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .footer p:first-child {
+            font-size: 1.4em;
+            font-weight: 700;
+            color: #ffd700;
+            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.5);
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+        
+        .footer p:last-child {
+            font-size: 1em;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.95);
+            text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* Preview popup on hover */
+        .card-preview {
+            position: absolute;
+            top: 0;
+            left: -15px;
+            right: -15px;
+            background: #141414;
+            border-radius: 12px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: none;
+            z-index: 30;
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.9);
+            overflow: hidden;
+            transform: scale(0.95);
+        }
+        
+        .pelicula-card:hover .card-preview {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+            transform: scale(1);
+        }
+        
+        .preview-img-container {
+            position: relative;
+            width: 100%;
+            height: 250px;
+            overflow: hidden;
+        }
+        
+        .preview-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        
+        .preview-img-container::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 80px;
+            background: linear-gradient(to top, #141414, transparent);
+        }
+        
+        .preview-title {
+            padding: 0 20px;
+            color: white;
+            font-size: 1.15em;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+        
+        .preview-desc {
+            padding: 0 20px 20px;
+            color: rgba(255, 255, 255, 0.82);
+            font-size: 0.82em;
+            line-height: 1.65;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .peliculas-grid {
+                grid-template-columns: 1fr;
+                padding: 20px;
+            }
+            
+            .logout-btn {
+                position: static;
+                display: inline-block;
+                margin-top: 15px;
+            }
+            
+            .actions {
+                padding: 15px 20px;
+            }
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.8), rgba(118, 75, 162, 0.8));
+            backdrop-filter: blur(8px);
+            animation: modalBackdropFade 0.3s ease-out;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        @keyframes modalBackdropFade {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: linear-gradient(145deg, #dedbdb 0%, #f8f9fa 100%);
+            margin: 0 auto;
+            padding: 0;
+            border-radius: 25px;
+            width: 100%;
+            max-width: 550px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.2);
+            animation: modalSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            position: relative;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: scale(0.7);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes modalSlideOut {
+            from {
+                opacity: 1;
+                transform: scale(1);
+            }
+            to {
+                opacity: 0;
+                transform: scale(0.7);
+            }
+        }
+
+        .modal-header {
+            background: #fff;
+            color: #222;
+            padding: 25px 30px;
+            border-radius: 25px 25px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .modal-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            animation: headerGlow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes headerGlow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(180deg); }
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .header-icon {
+            font-size: 2em;
+            animation: heartBeat 2s ease-in-out infinite;
+        }
+
+        @keyframes heartBeat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 1.6em;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .close {
+            color: white;
+            font-size: 32px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            z-index: 2;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .close:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.2);
+            transform: rotate(90deg) scale(1.1);
+        }
+
+        .modal-body {
+            padding: 35px;
+            padding-bottom: 45px;
+        }
+
+        .movie-poster-modal {
+              position: relative;
+              width: 100%;
+              max-width: 600px;
+              margin: 0 auto 30px auto;
+              aspect-ratio: 2/3;
+              border-radius: 0 0 20px 20px;
+              overflow: hidden;
+              background: transparent;
+              box-shadow: none;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+        }
+
+        .modal-poster-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.98) contrast(1.08);
+            background: transparent;
+        }
+
+        .movie-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            color: white;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .movie-icon {
+            font-size: 2.5em;
+            animation: movieBounce 2s ease-in-out infinite;
+        }
+
+        @keyframes movieBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .movie-details h3 {
+            margin: 0 0 5px 0;
+            font-size: 1.4em;
+            font-weight: 600;
+        }
+
+        .movie-details p {
+            margin: 0;
+            opacity: 0.9;
+            font-size: 0.95em;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .section-icon {
+            font-size: 1.5em;
+        }
+
+        .section-header label {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #2c3e50;
+            margin: 0;
+        }
+
+        .rating-section {
+            margin-bottom: 35px;
+        }
+
+        .stars-container {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s;
+        }
+
+        .stars-container:hover {
+            border-color: #667eea;
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.1);
+        }
+
+        .stars {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+            justify-content: center;
+        }
+
+        .star {
+            font-size: 35px;
+            color: #e9ecef;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .star:hover {
+            transform: scale(1.2);
+        }
+
+        .star.active {
+            color: #ffd700;
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+            animation: starPulse 0.6s ease-out;
+        }
+
+        @keyframes starPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+            100% { transform: scale(1); }
+        }
+
+        .rating-hint {
+            text-align: center;
+            font-size: 0.9em;
+            color: #6c757d;
+            font-style: italic;
+        }
+
+        .error-message {
+            display: none;
+            color: #dc3545;
+            font-size: 0.95em;
+            margin-top: 10px;
+            padding: 10px;
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .error-icon {
+            font-size: 1.2em;
+        }
+
+        .comment-section {
+            margin-bottom: 35px;
+        }
+
+        .textarea-container {
+            position: relative;
+        }
+
+        .comment-section textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e8ed;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 1em;
+            resize: vertical;
+            transition: all 0.3s;
+            background: #f8f9fa;
+            min-height: 100px;
+        }
+
+        .comment-section textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .textarea-hint {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #6c757d;
+            font-style: italic;
+        }
+
+        .hint-icon {
+            font-size: 1.1em;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .btn-cancel, .btn-submit {
+            padding: 14px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-cancel {
+            background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(127, 140, 141, 0.3);
+        }
+
+        .btn-cancel:hover {
+            background: linear-gradient(135deg, #7f8c8d 0%, #6c7b7d 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(127, 140, 141, 0.4);
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        .btn-icon {
+            font-size: 1.2em;
+        }
+
+        @media (max-width: 600px) {
+            .modal {
+                padding: 10px;
+            }
+
+            .modal-content {
+                width: 100%;
+                max-width: none;
+                max-height: 95vh;
+            }
+
+            .modal-header, .modal-body {
+                padding: 20px;
+            }
+
+            .modal-actions {
+                flex-direction: column;
+            }
+
+            .btn-cancel, .btn-submit {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .movie-info {
+                flex-direction: column;
+                text-align: center;
+                gap: 10px;
+            }
+
+            .stars {
+                gap: 5px;
+            }
+
+            .star {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="banner-wrapper">
+            <div class="header">
+                <a href="/" class="logout-btn">← Atrás</a>
+                <div class="header-content">
+                    <h1>🎬 Cartelera de Películas</h1>
+                    <div class="user-info">
+                        Bienvenido, <strong>{{ usuario.username }}</strong>
+                        {% if usuario.get('is_admin') %}
+                        <div class="admin-badge">👑 Administrador</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="actions">
+                {% if usuario.get('is_admin') %}
+                <a href="/insert_pelicula" class="btn btn-add">➕ Agregar Película</a>
+                <a href="/favoritos/admin/todos-favoritos" class="btn btn-admin-favs">👑 Ver Todos los Favoritos</a>
+                {% endif %}
+                <a href="/favoritos/mis-favoritos" class="btn btn-my-favs">❤️ Mis Favoritos</a>
+            </div>
+        </div>
+        
+        <div class="content-wrapper">
+        {% if peliculas %}
+        <div class="peliculas-grid">
+            {% for pelicula in peliculas %}
+            <div class="pelicula-card">
+                <div class="pelicula-card-inner">
+                <div class="pelicula-poster">
+                    {% if pelicula.imagen_path %}
+                    <img src="/static/images/{{ pelicula.imagen_path }}" alt="{{ pelicula.titulo }}">
+                    {% elif 'Harry Potter' in pelicula.titulo %}
+                    <img src="/static/images/harryptt.jpg" alt="{{ pelicula.titulo }}">
+                    {% elif 'Adèle' in pelicula.titulo or 'Adele' in pelicula.titulo %}
+                    <img src="/static/images/laviedeadele.jpg" alt="{{ pelicula.titulo }}">
+                    {% elif 'You Can Live Forever' in pelicula.titulo %}
+                    <img src="/static/images/youcan.png" alt="{{ pelicula.titulo }}">
+                    {% elif 'Crush' in pelicula.titulo %}
+                    <img src="/static/images/crush.jpg" alt="{{ pelicula.titulo }}">
+                    {% elif 'Spider' in pelicula.titulo or 'spider' in pelicula.titulo %}
+                    <img src="/static/images/spider.jpg" alt="{{ pelicula.titulo }}">
+                    {% elif 'Máscara' in pelicula.titulo or 'Mascara' in pelicula.titulo %}
+                    <img src="/static/images/themask.jpg" alt="{{ pelicula.titulo }}">
+                    {% elif 'La La Land' in pelicula.titulo %}
+                    <img src="/static/images/lalaland.jpg" alt="{{ pelicula.titulo }}">
+                    {% elif 'Carrie' in pelicula.titulo %}
+                    <img src="/static/images/carrie.jpg" alt="{{ pelicula.titulo }}">
+                    {% elif 'Superman' in pelicula.titulo %}
+                    <img src="/static/images/superman.jpeg" alt="{{ pelicula.titulo }}">
+                    {% elif 'Mi novio es un zombie' in pelicula.titulo %}
+                    <img src="/static/images/zombie.jpg" alt="{{ pelicula.titulo }}">
+                    {% else %}
+                    <img src="/static/images/default-poster.jpg" alt="{{ pelicula.titulo }}">
+                    {% endif %}
+                </div>
+                <div class="pelicula-content">
+                    <div class="pelicula-titulo">{{ pelicula.titulo }}</div>
+                    <div class="pelicula-subtitle">{{ pelicula.genero }} • {{ pelicula.año }}</div>
+                    <div class="pelicula-info">
+                        <strong>Director:</strong> {{ pelicula.director }}
+                    </div>
+                
+                    <div class="card-actions">
+                        {% if pelicula.id in favoritos_ids %}
+                        <form action="/favoritos/quitar/{{ pelicula.id }}" method="post" style="flex: 1; margin: 0;">
+                            <button type="submit" class="btn-favorito btn-favorito-added">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                                Añadido a favoritos
+                            </button>
+                        </form>
+                        {% else %}
+                        <button type="button" class="btn-favorito" data-pelicula-id="{{ pelicula.id }}" data-pelicula-titulo="{{ pelicula.titulo }}" data-imagen-path="{{ pelicula.imagen_path }}" onclick="openModal(this)">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                            Añadir a favoritos
+                        </button>
+                        {% endif %}
+                        
+                        {% if usuario.get('is_admin') %}
+                        <form action="/do_borrar_pelicula" method="post" onsubmit="return confirm('¿Seguro que quieres borrar esta película?');" style="flex: 1; margin: 0;">
+                            <input type="hidden" name="id" value="{{ pelicula.id }}">
+                            <button type="submit" class="btn-delete">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                                Eliminar
+                            </button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </div>
+                </div>
+
+                <!-- Preview popup -->
+                <div class="card-preview">
+                    <div class="preview-img-container">
+                        {% if pelicula.imagen_path %}
+                        <img src="/static/images/{{ pelicula.imagen_path }}" alt="{{ pelicula.titulo }}" class="preview-img">
+                        {% elif 'Harry Potter' in pelicula.titulo %}
+                        <img src="/static/images/mv.jpg" alt="{{ pelicula.titulo }}" class="preview-img">
+                        {% elif 'Adèle' in pelicula.titulo or 'Adele' in pelicula.titulo %}
+                        <img src="/static/images/mv4.jpg" alt="{{ pelicula.titulo }}" class="preview-img">
+                        {% elif 'You Can Live Forever' in pelicula.titulo %}
+                        <img src="/static/images/mv6.jpeg" alt="{{ pelicula.titulo }}" class="preview-img">
+                        {% elif 'Crush' in pelicula.titulo %}
+                        <img src="/static/images/mv5.jpg" alt="{{ pelicula.titulo }}" class="preview-img">
+                        {% elif 'Spider' in pelicula.titulo or 'spider' in pelicula.titulo %}
+                        <img src="/static/images/mv2.png" alt="{{ pelicula.titulo }}" class="preview-img">
+                        {% elif 'Máscara' in pelicula.titulo or 'Mascara' in pelicula.titulo %}
+                        <img src="/static/images/mv3.jpg" alt="{{ pelicula.titulo }}" class="preview-img">
+                        {% elif 'La La Land' in pelicula.titulo %}
+                        <img src="/static/images/mv7.jpg" alt="{{ pelicula.titulo }}" class="preview-img">
+                        {% elif 'Carrie' in pelicula.titulo %}
+                        <img src="/static/images/mv8.jpg" alt="{{ pelicula.titulo }}" class="preview-img">
+                        {% elif 'Superman' in pelicula.titulo %}
+                        <img src="/static/images/mv9.jpg" alt="{{ pelicula.titulo }}" class="preview-img">
+                        {% elif 'Mi novio es un zombie' in pelicula.titulo %}
+                        <img src="/static/images/mv10.jpg" alt="{{ pelicula.titulo }}" class="preview-img">
+                        {% else %}
+                        <img src="/static/images/default-poster.jpg" alt="{{ pelicula.titulo }}" class="preview-img">
+                        {% endif %}
+                    </div>
+                    <div class="preview-title">{{ pelicula.titulo }}</div>
+                    <div class="preview-desc">
+                        {% if 'Harry Potter' in pelicula.titulo %}
+                        Harry Potter y la Piedra Filosofal (2001), dirigida por Chris Columbus, es el encantador inicio de la saga cinematográfica basada en los libros de J.K. Rowling. Narra la historia de Harry Potter, un niño huérfano que descubre a sus 11 años que es mago y es invitado al Colegio Hogwarts de Magia y Hechicería, donde descubre su pasado, encuentra la amistad y se enfrenta a los primeros peligros de un mundo mágico inmerso en misterio.
+                        {% elif 'Adèle' in pelicula.titulo or 'Adele' in pelicula.titulo %}
+                        La vida de Adèle, adaptación de la novela gráfica de Julie Maroh, narra el despertar sexual y emocional de Adèle (Adèle Exarchopoulos), una adolescente de quince años que, tras dudar sobre su sexualidad, se enamora inesperadamente de Emma (Léa Seydoux), una joven de pelo azul que le muestra el deseo y la madurez. Esta intensa historia sigue el viaje de autodescubrimiento de Adèle, quien debe enfrentar los juicios y prejuicios de su entorno familiar y social al asumir su identidad.
+                        {% elif 'You Can Live Forever' in pelicula.titulo %}
+                        Conmovedor drama canadiense, You Can Live Forever (2022) narra la historia de Jaime, una adolescente que tras la muerte de su padre es enviada a vivir con sus parientes Testigos de Jehová. Allí conoce a Marike, una joven profundamente devota. La película captura con delicadeza la intensidad de un amor prohibido que florece entre ambas, obligándolas a navegar la dolorosa tensión entre sus deseos más sinceros y las asfixiantes expectativas de una fe que no permite desviaciones. Es un relato conmovedor sobre la identidad y el sacrificio en la búsqueda de la libertad emocional.
+                        {% elif 'Crush' in pelicula.titulo %}
+                        Crush (2022) es una encantadora comedia romántica juvenil que sigue a Paige, una aspirante a artista que, para acercarse a su amor platónico de toda la vida, se une obligada al equipo de atletismo de su instituto, solo para descubrir un inesperado triángulo amoroso y nuevos sentimientos hacia la hermana gemela de su crush. Ambientada en el entorno escolar, esta historia LGBTQ+ combina el autodescubrimiento con la comedia de enredos, destacando por su ternura, un guion ágil y la química entre sus protagonistas al explorar la confusión del primer amor.
+                        {% elif 'Spider' in pelicula.titulo or 'spider' in pelicula.titulo %}
+                        Dos años después de la primera película, Peter Parker vive en la precariedad: pierde trabajos, llega tarde a la universidad y tiene problemas económicos. Su vida amorosa está estancada debido a su distanciamiento autoimpuesto de Mary Jane Watson, quien se compromete con otro hombre. Simultáneamente, su mejor amigo, Harry Osborn, consume su vida buscando venganza contra Spider-Man por la muerte de su padre.
+                        {% elif 'Máscara' in pelicula.titulo or 'Mascara' in pelicula.titulo %}
+                        Stanley Ipkiss (Jim Carrey) es un cajero de banco tímido, torpe y de buen corazón que sufre el desprecio de su entorno. Su vida cambia radicalmente al encontrar una misteriosa máscara de madera, que representa a Loki, el dios nórdico de la travesura. Al ponérsela, se transforma en un ser de cara verde, con confianza inquebrantable y la capacidad de manipular la realidad como un dibujo animado.
+                        {% elif 'La La Land' in pelicula.titulo %}
+                        Ambientada en un moderno Los Ángeles que rinde tributo a la era dorada de los musicales, La La Land (2016) sigue el apasionado encuentro entre Mia (Emma Stone), una aspirante a actriz, y Sebastian (Ryan Gosling), un pianista de jazz purista. A medida que sus ambiciones personales despegan, la película explora con una estética vibrante y una banda sonora melancólica la inevitable colisión entre el éxito profesional y el sacrificio amoroso. Es un relato agridulce que cuestiona si es posible alcanzar nuestros sueños sin renunciar a las personas que nos ayudaron a creer en ellos.
+                        {% elif 'Carrie' in pelicula.titulo %}
+                        Basada en la novela homónima de Stephen King, Carrie (1976) es un pilar del cine de terror que narra la trágica vida de Carrie White (Sissy Spacek), una adolescente tímida atrapada entre el acoso escolar implacable y el fanatismo religioso asfixiante de su madre. La película, dirigida por Brian De Palma, utiliza una estética visual perturbadora para mostrar cómo el despertar biológico de la joven desencadena latentes poderes telequinéticos. Este cóctel de humillación y trauma estalla en una de las escenas más icónicas del cine: un baile de graduación que se transforma en una carnicería sobrenatural.
+                        {% elif 'Superman' in pelicula.titulo %}
+                        Escrita y dirigida por James Gunn, Superman (2025) presenta a un Clark Kent reconciliando su herencia kryptoniana con su crianza humana en un mundo que cuestiona la bondad pura. La trama lo sumerge en un conflicto geopolítico tras intervenir en una crisis internacional provocada por Lex Luthor, redefiniendo la verdad y la justicia con una narrativa esperanzadora.
+                        {% elif 'Mi novio es un zombie' in pelicula.titulo %}
+                        Inspirada en la novela de Isaac Marion, Mi novio es un zombie (Warm Bodies, 2013) reinventa el género postapocalíptico a través de una comedia romántica con tintes de sátira social. La historia sigue a R, un muerto viviente con crisis existencial que, tras salvar a la humana Julie de un ataque, experimenta un despertar emocional que comienza a devolverle su humanidad.
+                        {% else %}
+                        {{ pelicula.titulo }} ({{ pelicula.año }}), dirigida por {{ pelicula.director }}. Una película de género {{ pelicula.genero }} que no te puedes perder.
+                        {% endif %}
+                    </div>
+                </div>
+
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="no-data">
+            📽️ No hay películas en la cartelera
+        </div>
+        {% endif %}
+        
+        </div>
+        
+        <div class="footer">
+            <p>🎬 Sistema de Gestión de Cartelera</p>
+            <p>{{ peliculas|length }} películas disponibles</p>
+        </div>
+    </div>
+
+    <!-- Modal para agregar a favoritos -->
+    <div id="favoritoModal" class="modal">
+        <div class="modal-content" style="padding-top:0;">
+            <div class="movie-poster-modal" style="margin-top:0;">
+                <img id="modalPeliculaImage" src="" alt="Cartelera de la película" class="modal-poster-img">
+                <span class="close" onclick="closeModal()" style="position:absolute;top:18px;right:18px;z-index:2;font-size:2rem;background:rgba(255,255,255,0.7);border-radius:50%;padding:2px 10px;cursor:pointer;">&times;</span>
+            </div>
+            <div class="modal-body" style="padding-top:0;">
+                <div class="movie-info">
+                    <div class="movie-icon">🎬</div>
+                    <div class="movie-details">
+                        <h3 id="modalPeliculaTitle"></h3>
+                        <p>¡Califícala y agrega tu opinión!</p>
+                    </div>
+                </div>
+
+                <form id="favoritoForm">
+                    <input type="hidden" id="peliculaId" name="pelicula_id">
+
+                    <div class="rating-section">
+                        <div class="section-header">
+                            <span class="section-icon">⭐</span>
+                            <label>Tu Calificación</label>
+                        </div>
+                        <div class="stars-container">
+                            <div class="stars" id="stars">
+                                <span class="star" data-value="1">★</span>
+                                <span class="star" data-value="2">★</span>
+                                <span class="star" data-value="3">★</span>
+                                <span class="star" data-value="4">★</span>
+                                <span class="star" data-value="5">★</span>
+                            </div>
+                            <div class="rating-hint">Haz clic en las estrellas para calificar</div>
+                        </div>
+                        <input type="hidden" id="rating" name="stars" required>
+                        <div id="ratingError" class="error-message">
+                            <span class="error-icon">⚠️</span>
+                            Por favor selecciona una calificación
+                        </div>
+                    </div>
+
+                    <div class="comment-section">
+                        <div class="section-header">
+                            <span class="section-icon">💬</span>
+                            <label for="comentario">Tu Comentario</label>
+                        </div>
+                        <div class="textarea-container">
+                            <textarea id="comentario" name="comentario" placeholder="¿Qué te pareció esta película? Comparte tus pensamientos..." rows="4"></textarea>
+                            <div class="textarea-hint">
+                                <span class="hint-icon">💡</span>
+                                Opcional - máximo 500 caracteres
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-actions">
+                        <button type="button" class="btn-cancel" onclick="closeModal()">
+                            <span class="btn-icon">✕</span>
+                            Cancelar
+                        </button>
+                        <button type="submit" class="btn-submit">
+                            <span class="btn-icon">❤️</span>
+                            Añadir a Favoritos
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openModal(button) {
+            const peliculaId = button.getAttribute('data-pelicula-id');
+            const titulo = button.getAttribute('data-pelicula-titulo');
+            const imagenPath = button.getAttribute('data-imagen-path');
+            document.getElementById('peliculaId').value = peliculaId;
+            document.getElementById('modalPeliculaTitle').textContent = titulo;
+            
+
+            // Asignar cartelera real
+            let imagen = '/static/images/default-poster.jpg';
+            if (imagenPath && imagenPath !== 'None') {
+                imagen = '/static/images/' + imagenPath;
+            } else if (titulo.toLowerCase().includes('adèle') || titulo.toLowerCase().includes('adele')) imagen = '/static/images/laviedeadele.jpg';
+            else if (titulo.toLowerCase().includes('harry potter')) imagen = '/static/images/harryptt.jpg';
+            else if (titulo.toLowerCase().includes('carrie')) imagen = '/static/images/carrie.jpg';
+            else if (titulo.toLowerCase().includes('crush')) imagen = '/static/images/crush.jpg';
+            else if (titulo.toLowerCase().includes('spider')) imagen = '/static/images/spider.jpg';
+            else if (titulo.toLowerCase().includes('máscara') || titulo.toLowerCase().includes('mascara')) imagen = '/static/images/themask.jpg';
+            else if (titulo.toLowerCase().includes('la la land')) imagen = '/static/images/lalaland.jpg';
+            else if (titulo.toLowerCase().includes('superman')) imagen = '/static/images/superman.jpeg';
+            else if (titulo.toLowerCase().includes('mi novio es un zombie')) imagen = '/static/images/zombie.jpg';
+            else if (titulo.toLowerCase().includes('you can live forever')) imagen = '/static/images/youcan.png';
+
+            document.getElementById('modalPeliculaImage').src = imagen;
+            
+            document.getElementById('favoritoModal').style.display = 'flex';
+            resetModal();
+            // Desplazar hacia arriba si el contenido del modal es alto
+            document.getElementById('favoritoModal').scrollTop = 0;
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('favoritoModal');
+            const modalContent = document.querySelector('.modal-content');
+
+            // Aplicar animación de salida al contenido del modal
+            modalContent.style.animation = 'modalSlideOut 0.3s ease-in';
+            // Esperar a que termine la animación (250ms) antes de ocultar el modal
+            setTimeout(() => {
+                modal.style.display = 'none';
+                // Resetear la animación para la próxima apertura
+                modalContent.style.animation = '';
+            }, 250);
+
+            resetModal();
+        }
+
+        function resetModal() {
+            document.getElementById('rating').value = '';
+            document.getElementById('comentario').value = '';
+            document.getElementById('ratingError').style.display = 'none';
+            const stars = document.querySelectorAll('.star');
+            stars.forEach(star => star.classList.remove('active'));
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Configurar el sistema de calificación con estrellas interactivas
+            const stars = document.querySelectorAll('.star');
+            const ratingInput = document.getElementById('rating');
+
+            stars.forEach((star, index) => {
+                // esto establece la calificación y actualiza la visualización
+                star.addEventListener('click', function() {
+                    const rating = index + 1;  // Calificación basada en la posición de la estrella (1-5)
+                    ratingInput.value = rating;  // Asigna el valor al campo oculto del formulario
+
+                    // Actualizar la visualización de estrellas con animación
+                    stars.forEach((s, i) => {
+                        if (i < rating) {
+                            s.classList.add('active');  // Ilumina estrellas hasta la calificación seleccionada
+                        } else {
+                            s.classList.remove('active');  // Apaga estrellas restantes
+                        }
+                    });
+
+                    document.getElementById('ratingError').style.display = 'none';  // Oculta mensaje de error si estaba visible
+                });
+
+                // Efecto hover: previsualiza la calificación al pasar el mouse
+                star.addEventListener('mouseenter', function() {
+                    const hoverRating = index + 1;
+                    stars.forEach((s, i) => {
+                        if (i < hoverRating) {
+                            s.classList.add('active');  // Ilumina estrellas temporalmente durante hover
+                        } else {
+                            s.classList.remove('active');
+                        }
+                    });
+                });
+            });
+
+            // Restaura la visualización de estrellas al salir el mouse, manteniendo solo la calificación seleccionada
+            document.querySelector('.stars').addEventListener('mouseleave', function() {
+                const currentRating = parseInt(ratingInput.value);
+                stars.forEach((s, i) => {
+                    if (i < currentRating) {
+                        s.classList.add('active');
+                    } else {
+                        s.classList.remove('active');
+                    }
+                });
+            });
+
+            // Ajusta automáticamente la altura del textarea según el contenido
+            const textarea = document.getElementById('comentario');
+            textarea.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = this.scrollHeight + 'px';
+            });
+
+            // Limita el comentario a 500 caracteres máximo
+            textarea.addEventListener('input', function() {
+                const maxLength = 500;
+                const currentLength = this.value.length;
+                if (currentLength > maxLength) {
+                    this.value = this.value.substring(0, maxLength);  // Trunca el texto si excede el límite
+                }
+            });
+
+            // Valida el formulario antes de enviarlo: requiere calificación y envía datos al servidor
+            document.getElementById('favoritoForm').addEventListener('submit', function(e) {
+                e.preventDefault();  // Previene el envío por defecto del formulario
+
+                if (!ratingInput.value) {
+                    document.getElementById('ratingError').style.display = 'flex';  // Muestra error si no hay calificación
+                    return;
+                }
+
+                const formData = new FormData(this);  // Recopila datos del formulario
+
+                // Envía la solicitud POST al endpoint de agregar favorito
+                fetch('/favoritos/agregar/' + formData.get('pelicula_id'), {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => {
+                    if (response.ok) {
+                        closeModal();  // Cierra el modal si es exitoso
+                        location.reload();  // Recarga la página para actualizar la lista
+                    } else {
+                        alert('❌ Error al añadir a favoritos. Inténtalo de nuevo.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('❌ Error al añadir a favoritos. Inténtalo de nuevo.');
+                });
+            });
+
+            // Cierra el modal al hacer clic fuera de él
+            window.onclick = function(event) {
+                const modal = document.getElementById('favoritoModal');
+                if (event.target == modal) {
+                    closeModal();
+                }
+            }
+
+            // Permite cerrar el modal presionando la tecla Esc
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeModal();
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>

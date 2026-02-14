@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="/static/images/iconn.png">
+    <title>❤️ Mis Películas Favoritas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: url('/static/images/background.jpg') center center / cover no-repeat fixed;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(3px);
+            -webkit-backdrop-filter: blur(3px);
+            pointer-events: none;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes pulseHeart {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+        
+        @keyframes cardIn {
+            from { opacity: 0; transform: translateY(20px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        
+        .header {
+            background: rgba(30, 41, 59, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            padding: 35px 40px;
+            margin-bottom: 25px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+        
+        .header h1 {
+            font-size: 2.2em;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 600;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        .user-info {
+            margin-top: 10px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1em;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .nav-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 22px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .nav-btn-back {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        
+        .nav-btn-back:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .nav-btn-primary {
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            color: white;
+            border: none;
+            box-shadow: 0 4px 15px rgba(6, 182, 212, 0.3);
+        }
+        
+        .nav-btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(6, 182, 212, 0.5);
+        }
+        
+        .stats {
+            background: rgba(30, 41, 59, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 25px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        .stats h2 {
+            font-size: 2.5em;
+            color: #22d3ee;
+            font-weight: 700;
+        }
+        
+        .stats p {
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 5px;
+            font-size: 1em;
+        }
+        
+        .favoritos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+        }
+        
+        .favorito-card {
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 16px;
+            padding: 28px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            animation: cardIn 0.5s ease-out both;
+        }
+        
+        .favorito-card:nth-child(1) { animation-delay: 0.1s; }
+        .favorito-card:nth-child(2) { animation-delay: 0.2s; }
+        .favorito-card:nth-child(3) { animation-delay: 0.3s; }
+        .favorito-card:nth-child(4) { animation-delay: 0.4s; }
+        .favorito-card:nth-child(5) { animation-delay: 0.5s; }
+        .favorito-card:nth-child(6) { animation-delay: 0.6s; }
+        
+        .favorito-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #e91e63, #06b6d4, #e91e63);
+            background-size: 200% 100%;
+            animation: shimmer 3s ease infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        
+        .favorito-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+            border-color: rgba(6, 182, 212, 0.3);
+        }
+        
+        .heart-icon {
+            position: absolute;
+            top: 18px;
+            right: 18px;
+            font-size: 1.6em;
+            animation: pulseHeart 2s ease-in-out infinite;
+        }
+        
+        .favorito-card h3 {
+            color: white;
+            margin-bottom: 15px;
+            font-size: 1.35em;
+            font-weight: 600;
+            padding-right: 40px;
+        }
+        
+        .pelicula-info {
+            margin: 8px 0;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.95em;
+        }
+        
+        .pelicula-info strong {
+            color: #22d3ee;
+        }
+        
+        .fecha-agregado {
+            font-size: 0.85em;
+            color: rgba(255, 255, 255, 0.4);
+            margin-top: 15px;
+            font-style: italic;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .remove-btn {
+            margin-top: 15px;
+            width: 100%;
+            padding: 12px;
+            background: rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.95em;
+            font-family: inherit;
+        }
+        
+        .remove-btn:hover {
+            background: rgba(239, 68, 68, 0.4);
+            color: white;
+            border-color: rgba(239, 68, 68, 0.6);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+        }
+        
+        .action-buttons {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .edit-btn {
+            flex: 1;
+            padding: 12px;
+            background: rgba(34, 197, 94, 0.2);
+            color: #86efac;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.95em;
+            font-family: inherit;
+        }
+        
+        .edit-btn:hover {
+            background: rgba(34, 197, 94, 0.3);
+            color: white;
+            border-color: rgba(34, 197, 94, 0.6);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
+        }
+        
+        .empty-state {
+            background: rgba(30, 41, 59, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            text-align: center;
+            padding: 80px 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+        
+        .empty-state .empty-icon {
+            font-size: 80px;
+            display: block;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
+        }
+        
+        .empty-state h2 {
+            color: white;
+            font-size: 1.5em;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+        
+        .empty-state p {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 1.05em;
+            margin-bottom: 30px;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 { font-size: 1.5em; }
+            .favoritos-grid { grid-template-columns: 1fr; }
+            .nav-buttons { flex-direction: column; align-items: center; }
+        }
+
+        /* Rating and Comment Styles */
+        .rating-display {
+            margin: 10px 0;
+        }
+
+        .stars-display {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            margin-top: 5px;
+        }
+
+        .star-filled {
+            color: #ffd700;
+            font-size: 1.2em;
+        }
+
+        .star-empty {
+            color: #ddd;
+            font-size: 1.2em;
+        }
+
+        .rating-text {
+            margin-left: 8px;
+            font-size: 0.9em;
+            color: #666;
+            font-weight: normal;
+        }
+
+        .comentario-display {
+            margin: 15px 0;
+            padding: 12px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .comentario-display strong {
+            color: #667eea;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .comentario-text {
+            margin: 0;
+            font-style: italic;
+            color: #555;
+            line-height: 1.4;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            margin: 10% auto;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 16px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            animation: modalFadeIn 0.3s ease-out;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(-50px) scale(0.9); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: -10px;
+        }
+
+        .close:hover {
+            color: white;
+        }
+
+        .modal h2 {
+            color: white;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #22d3ee;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-family: inherit;
+            font-size: 1em;
+        }
+
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #22d3ee;
+            box-shadow: 0 0 0 2px rgba(34, 211, 238, 0.2);
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 25px;
+        }
+
+        .cancel-btn {
+            padding: 12px 24px;
+            background: rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .cancel-btn:hover {
+            background: rgba(239, 68, 68, 0.3);
+            color: white;
+        }
+
+        .save-btn {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(6, 182, 212, 0.3);
+        }
+
+        .save-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(6, 182, 212, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>❤️ Mis Películas Favoritas</h1>
+            <div class="user-info">
+                <p>👤 {{ usuario.username }}</p>
+            </div>
+            <div class="nav-buttons">
+                <a href="/peliculas" class="nav-btn nav-btn-back">← Volver a Cartelera</a>
+                <a href="/peliculas" class="nav-btn nav-btn-primary">🎬 Explorar Películas</a>
+            </div>
+        </div>
+        
+        {% if favoritos|length > 0 %}
+            <div class="stats">
+                <h2>{{ favoritos|length }}</h2>
+                <p>película{% if favoritos|length != 1 %}s{% endif %} en tu lista de favoritos</p>
+            </div>
+            
+            <div class="favoritos-grid">
+                {% for fav in favoritos %}
+                <div class="favorito-card">
+                    <span class="heart-icon">❤️</span>
+                    <h3>{{ fav.pelicula.titulo }}</h3>
+                    <div class="pelicula-info">
+                        <p><strong>🎭 Género:</strong> {{ fav.pelicula.genero }}</p>
+                        <p><strong>📅 Año:</strong> {{ fav.pelicula.año }}</p>
+                        <p><strong>🎬 Director:</strong> {{ fav.pelicula.director }}</p>
+                        <div class="rating-display">
+                            <strong>⭐ Calificación:</strong>
+                            <div class="stars-display">
+                                {% for i in range(1, 6) %}
+                                    {% if i <= fav.estrellas %}
+                                        <span class="star-filled">★</span>
+                                    {% else %}
+                                        <span class="star-empty">☆</span>
+                                    {% endif %}
+                                {% endfor %}
+                                <span class="rating-text">({{ fav.estrellas }}/5)</span>
+                            </div>
+                        </div>
+                        {% if fav.comentario %}
+                        <div class="comentario-display">
+                            <strong>💬 Comentario:</strong>
+                            <p class="comentario-text">{{ fav.comentario }}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <p class="fecha-agregado">📌 Agregada el {{ fav.fecha_agregado }}</p>
+                    
+                    <div class="action-buttons">
+                        <button type="button" class="edit-btn" data-pelicula-id="{{ fav.pelicula.id }}" data-comentario="{{ fav.comentario|replace("'", "\\'")|replace('"', '\\"') }}" data-estrellas="{{ fav.estrellas }}">✏️ Editar</button>
+                        <form method="POST" action="/favoritos/quitar/{{ fav.pelicula.id }}" style="margin: 0;">
+                            <button type="submit" class="remove-btn">🗑️ Quitar de favoritos</button>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <span class="empty-icon">💔</span>
+                <h2>Aún no tienes películas favoritas</h2>
+                <p>Explora nuestra cartelera y agrega tus películas favoritas</p>
+                <a href="/peliculas" class="nav-btn nav-btn-primary">🎬 Ver todas las películas</a>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Modal de Edición -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeEditModal()">&times;</span>
+            <h2>✏️ Editar Reseña</h2>
+            <form id="editForm" method="POST" action="">
+                <div class="form-group">
+                    <label for="editStars" style="color:#ffd700; font-weight:700;">⭐ Calificación (1-5 estrellas):</label>
+                    <select id="editStars" name="stars" required style="color:#222; background:#fff; font-weight:600;">
+                        <option value="1">1 estrella</option>
+                        <option value="2">2 estrellas</option>
+                        <option value="3">3 estrellas</option>
+                        <option value="4">4 estrellas</option>
+                        <option value="5">5 estrellas</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="editComentario" style="color:#667eea; font-weight:700;">💬 Comentario:</label>
+                    <textarea id="editComentario" name="comentario" rows="4" placeholder="Escribe tu comentario aquí..." style="color:#222; background:#fff; font-weight:600;"></textarea>
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" class="cancel-btn" onclick="closeEditModal()">Cancelar</button>
+                    <button type="submit" class="save-btn">💾 Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Función para abrir el modal de edición
+        function openEditModal(peliculaId, comentario, estrellas) {
+            document.getElementById('editForm').action = '/favoritos/editar/' + peliculaId;
+            document.getElementById('editComentario').value = comentario;
+            document.getElementById('editStars').value = estrellas;
+            document.getElementById('editModal').style.display = 'block';
+        }
+
+        // Función para cerrar el modal
+        function closeEditModal() {
+            document.getElementById('editModal').style.display = 'none';
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Agregar event listeners a todos los botones de editar
+            const editButtons = document.querySelectorAll('.edit-btn');
+            editButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const peliculaId = this.getAttribute('data-pelicula-id');
+                    const comentario = this.getAttribute('data-comentario');
+                    const estrellas = this.getAttribute('data-estrellas');
+                    openEditModal(peliculaId, comentario, estrellas);
+                });
+            });
+
+            // Cerrar modal al hacer clic fuera
+            window.addEventListener('click', function(event) {
+                const modal = document.getElementById('editModal');
+                if (event.target === modal) {
+                    closeEditModal();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
