@@ -49,7 +49,7 @@ jobs:
       with:
         context: .
         push: true
-        tags: aleepv/webclase-devops:latest
+        tags: alidia2asira/webclase-devops:latest
 
   deploy:
     needs: build-and-push
@@ -64,8 +64,8 @@ jobs:
         username: ${{ secrets.SERVER_USER }}
         key: ${{ secrets.SERVER_SSH_KEY }}
         script: |
-          docker pull aleepv/webclase-devops:latest
+          docker pull alidia2asira/webclase-devops:latest
           docker stop webclase-devops || true
           docker rm webclase-devops || true
-          docker run -d --name webclase-devops -p 8000:8000 aleepv/webclase-devops:latest
+          docker run -d --name webclase-devops -p 8000:8000 alidia2asira/webclase-devops:latest
           docker run -d --name watchtower -v /var/run/docker.sock:/var/run/docker.sock containrrr/watchtower --interval 30 webclase-devops
