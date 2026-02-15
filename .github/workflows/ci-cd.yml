@@ -50,22 +50,3 @@ jobs:
         context: .
         push: true
         tags: alidia2asira/webclase-devops:latest
-
-  deploy:
-    needs: build-and-push
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-
-    steps:
-    - name: Deploy with WatchTower
-      uses: appleboy/ssh-action@v1.0.3
-      with:
-        host: ${{ secrets.SERVER_HOST }}
-        username: ${{ secrets.SERVER_USER }}
-        key: ${{ secrets.SERVER_SSH_KEY }}
-        script: |
-          docker pull alidia2asira/webclase-devops:latest
-          docker stop webclase-devops || true
-          docker rm webclase-devops || true
-          docker run -d --name webclase-devops -p 8000:8000 alidia2asira/webclase-devops:latest
-          docker run -d --name watchtower -v /var/run/docker.sock:/var/run/docker.sock containrrr/watchtower --interval 30 webclase-devops
