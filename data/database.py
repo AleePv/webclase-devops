@@ -18,5 +18,5 @@ database = mysql.connector.connect( # LLAMAMOS AL FUNCION CONNECT PARA CONECTARN
     ssl_disabled = True,
     user ='root', #USUARIO QUE USAMOS NOSOTROS
     password ='1asir', #CONTRASEÑA CON LA QUE NOS CONECTAMOS
-    database='Alexandra'
+    database='Alexandra' #MI BASE DE DATOS
 ) 
