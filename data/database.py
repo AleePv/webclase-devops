@@ -20,3 +20,4 @@ database = mysql.connector.connect( # LLAMAMOS AL FUNCION CONNECT PARA CONECTARN
     password ='1asir', #CONTRASEÑA CON LA QUE NOS CONECTAMOS
     database='Alexandra'
 ) 
+#test 
